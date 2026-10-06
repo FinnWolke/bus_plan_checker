@@ -9,15 +9,6 @@ import streamlit as st
 from logic import (DEFAULT_SETTINGS, check_plan, improve, is_feasible, kpis, minutes_to_time,
                    read_distances, read_plan, read_timetable, to_excel)
 
-# If you start this file with the Run button (python app.py), start Streamlit for you.
-if __name__ == "__main__":
-    from streamlit.runtime import exists
-    if not exists():
-        import subprocess
-        import sys
-        subprocess.run([sys.executable, "-m", "streamlit", "run", __file__])
-        sys.exit()
-
 CHECKS = {
     "FC1": "SOC never below 10%",
     "FC2": "Charging at least 15 minutes",
