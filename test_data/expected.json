@@ -1,0 +1,959 @@
+[
+ {
+  "id": "DQ1",
+  "what": "Happy flow: correct import of all three data files (client's original files)",
+  "file": "Bus_Planning.xlsx (original)",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Original Canvas files without changes.",
+  "expected": "No data errors (DQ-*). Warnings DQ-ORDER (6) and DQ-ENERGY are expected: the client's file has rows out of order and wrong energy values.",
+  "req": "DQ: import files",
+  "type": "Happy flow",
+  "must": [
+   [
+    "DQ-ORDER",
+    "warning",
+    null,
+    null
+   ]
+  ],
+  "must_not": [
+   "DQ-COL",
+   "DQ-EMPTY",
+   "DQ-ACT",
+   "DQ-TIME",
+   "DQ-LOC",
+   "DQ-LINE",
+   "DQ-BUS"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "DQ2",
+  "what": "Missing column detected (energy consumption removed)",
+  "file": "Test-DQ2.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE with column 'energy consumption' deleted.",
+  "expected": "ERROR DQ-COL: 'Missing column(s): energy consumption.' No further analysis.",
+  "req": "DQ: check expected format",
+  "type": "Error",
+  "must": [
+   [
+    "DQ-COL",
+    "error",
+    null,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "DQ3",
+  "what": "Invalid activity type detected ('brake')",
+  "file": "Test-DQ3.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE, row 4 (bus 1, idle) activity changed to 'brake'.",
+  "expected": "ERROR DQ-ACT on row 4: Unknown activity 'brake'.",
+  "req": "DQ: detect incorrect data",
+  "type": "Error",
+  "must": [
+   [
+    "DQ-ACT",
+    "error",
+    4,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "DQ4",
+  "what": "Text instead of a time value detected",
+  "file": "Test-DQ4.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE, row 4 start time = 'ten past six'.",
+  "expected": "ERROR DQ-TIME on row 4.",
+  "req": "DQ: detect incorrect data",
+  "type": "Error",
+  "must": [
+   [
+    "DQ-TIME",
+    "error",
+    4,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "DQ5",
+  "what": "Trip on an out-of-scope line (402) detected",
+  "file": "Test-DQ5.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE, row 57 (bus 2, service trip) line changed to 402.",
+  "expected": "ERROR DQ-LINE on row 57: line 402 out of scope. (Follow-on: FC8 because that timetable trip is now not driven.)",
+  "req": "DQ: detect incorrect data / scope 400-401",
+  "type": "Error",
+  "must": [
+   [
+    "DQ-LINE",
+    "error",
+    57,
+    null
+   ],
+   [
+    "FC8",
+    "error",
+    null,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "DQ6",
+  "what": "Empty data file (header only) handled gracefully",
+  "file": "Test-DQ6.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Only the header row.",
+  "expected": "ERROR DQ-EMPTY 'contains no data', no crash.",
+  "req": "DQ: detect missing data",
+  "type": "Boundary",
+  "must": [
+   [
+    "DQ-EMPTY",
+    "error",
+    null,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "DQ7",
+  "what": "Wrong file uploaded as bus plan (timetable)",
+  "file": "Test-DQ7.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Copy of Timetable.xlsx, uploaded in the bus-plan field.",
+  "expected": "ERROR DQ-COL listing the missing bus-plan columns, no crash.",
+  "req": "DQ: check expected format",
+  "type": "Error",
+  "must": [
+   [
+    "DQ-COL",
+    "error",
+    null,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "DQ8",
+  "what": "Rows not in chronological order are detected and sorted",
+  "file": "Test-DQ8.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE with the rows of bus 1 in reverse order.",
+  "expected": "WARNING DQ-ORDER for bus 1; plan still feasible (same result as Test-BASE).",
+  "req": "DQ: detect incorrect data",
+  "type": "Error",
+  "must": [
+   [
+    "DQ-ORDER",
+    "warning",
+    null,
+    1
+   ]
+  ],
+  "must_not": [
+   "FC1",
+   "FC4",
+   "FC5"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC1-H",
+  "what": "FC1 happy flow: SOC stays within normal range",
+  "file": "Test-BASE.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE (feasible plan from the generator).",
+  "expected": "FC1 PASS for all buses; plan feasible.",
+  "req": "FC1",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [
+   "FC1",
+   "FC2",
+   "FC3",
+   "FC4",
+   "FC5",
+   "FC6",
+   "FC7",
+   "FC8"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC1-E",
+  "what": "FC1 error: SOC drops far below 10% (charging removed)",
+  "file": "Test-FC1-E.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE, every charging session of bus 5 changed into idle.",
+  "expected": "FC1 FAIL for bus 5 with time of first violation and lowest SOC.",
+  "req": "FC1",
+  "type": "Error",
+  "must": [
+   [
+    "FC1",
+    "error",
+    null,
+    5
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC1-B1",
+  "what": "FC1 boundary: lowest SOC exactly 10.0% of Q\u00b7SOH",
+  "file": "Test-FC1-B1.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "file",
+  "data": "Test-BASE; energy of the first activity of bus 14 (row 657) increased by 57.7320 kWh, so that the lowest SOC of bus 14 becomes 10.00%. Run with energy source = file column.",
+  "expected": "Lowest SOC bus 14 = 10.00% \u2192 PASS (10.00% is allowed)",
+  "req": "FC1",
+  "type": "Boundary",
+  "must": [],
+  "must_not": [
+   "FC1"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC1-B2",
+  "what": "FC1 boundary: lowest SOC exactly 9.9% of Q\u00b7SOH",
+  "file": "Test-FC1-B2.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "file",
+  "data": "Test-BASE; energy of the first activity of bus 14 (row 657) increased by 57.9870 kWh, so that the lowest SOC of bus 14 becomes 9.90%. Run with energy source = file column.",
+  "expected": "Lowest SOC bus 14 = 9.90% \u2192 FAIL (9.90% < 10%)",
+  "req": "FC1",
+  "type": "Boundary",
+  "must": [
+   [
+    "FC1",
+    "error",
+    null,
+    14
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC2-H",
+  "what": "FC2: charging session of 20 minutes",
+  "file": "Test-FC2-H.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "file",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) set to 20 min, following idle extended. Energy values unchanged \u2192 run with energy source = file column.",
+  "expected": "FC2 PASS for bus 13.",
+  "req": "FC2",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [
+   "FC2"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC2-E",
+  "what": "FC2: charging session of 5 minutes",
+  "file": "Test-FC2-E.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "file",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) set to 5 min, following idle extended. Energy values unchanged \u2192 run with energy source = file column.",
+  "expected": "FC2 FAIL for bus 13.",
+  "req": "FC2",
+  "type": "Error",
+  "must": [
+   [
+    "FC2",
+    "error",
+    null,
+    13
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC2-B1",
+  "what": "FC2: charging session of 15 minutes",
+  "file": "Test-FC2-B1.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "file",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) set to 15 min, following idle extended. Energy values unchanged \u2192 run with energy source = file column.",
+  "expected": "FC2 PASS (15 min is allowed) for bus 13.",
+  "req": "FC2",
+  "type": "Boundary",
+  "must": [],
+  "must_not": [
+   "FC2"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC2-B2",
+  "what": "FC2: charging session of 14 minutes",
+  "file": "Test-FC2-B2.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "file",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) set to 14 min, following idle extended. Energy values unchanged \u2192 run with energy source = file column.",
+  "expected": "FC2 FAIL (14 < 15 min) for bus 13.",
+  "req": "FC2",
+  "type": "Boundary",
+  "must": [
+   [
+    "FC2",
+    "error",
+    null,
+    13
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC3-H",
+  "what": "FC3: charging session ends at 85.0% SOC",
+  "file": "Test-FC3-H.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "file",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -183.1410 kWh so it ends at 85.00%. Run with energy source = file column.",
+  "expected": "FC3 PASS for bus 13.",
+  "req": "FC3",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [
+   "FC3"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC3-E",
+  "what": "FC3: charging session ends at 95.0% SOC",
+  "file": "Test-FC3-E.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "file",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -208.6410 kWh so it ends at 95.00%. Run with energy source = file column.",
+  "expected": "FC3 FAIL for bus 13.",
+  "req": "FC3",
+  "type": "Error",
+  "must": [
+   [
+    "FC3",
+    "error",
+    null,
+    13
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC3-B1",
+  "what": "FC3: charging session ends at 90.0% SOC",
+  "file": "Test-FC3-B1.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "file",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -195.8910 kWh so it ends at 90.00%. Run with energy source = file column.",
+  "expected": "FC3 PASS (90.00% is allowed) for bus 13.",
+  "req": "FC3",
+  "type": "Boundary",
+  "must": [],
+  "must_not": [
+   "FC3"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC3-B2",
+  "what": "FC3: charging session ends at 90.1% SOC",
+  "file": "Test-FC3-B2.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "file",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -196.1460 kWh so it ends at 90.10%. Run with energy source = file column.",
+  "expected": "FC3 FAIL (90.10% > 90%) for bus 13.",
+  "req": "FC3",
+  "type": "Boundary",
+  "must": [
+   [
+    "FC3",
+    "error",
+    null,
+    13
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC4-H",
+  "what": "FC4 happy flow: consecutive trips, no overlap, valid service trips",
+  "file": "Test-BASE.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE.",
+  "expected": "FC4 PASS.",
+  "req": "FC4",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [
+   "FC4"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC4-E1",
+  "what": "FC4 error: end time of activity 1 after start time of activity 2 (overlap)",
+  "file": "Test-FC4-E1.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE; idle of bus 1 (row 7) ends 3 min after the next service trip starts.",
+  "expected": "FC4 FAIL (overlap) on row 8.",
+  "req": "FC4",
+  "type": "Error",
+  "must": [
+   [
+    "FC4",
+    "error",
+    8,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC4-E2",
+  "what": "FC4 error: service trip not present in Timetable.xlsx",
+  "file": "Test-FC4-E2.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE; service trip on row 14 (bus 1) departs 1 minute later than in the timetable.",
+  "expected": "FC4 FAIL on row 14 (not in timetable) and FC8 FAIL (original timetable trip not driven).",
+  "req": "FC4",
+  "type": "Error",
+  "must": [
+   [
+    "FC4",
+    "error",
+    14,
+    null
+   ],
+   [
+    "FC8",
+    "error",
+    null,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC4-E3",
+  "what": "FC4 error: material trip has a line number filled in",
+  "file": "Test-FC4-E3.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE; material trip on row 2 gets line 400.",
+  "expected": "FC4 FAIL on row 2.",
+  "req": "FC4",
+  "type": "Error",
+  "must": [
+   [
+    "FC4",
+    "error",
+    2,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC4-B",
+  "what": "FC4 boundary: end time of trip 1 equals start time of trip 2",
+  "file": "Test-BASE.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE; e.g. rows 8-9 (bus 1): service trip ends 06:59, next service trip starts 06:59.",
+  "expected": "PASS (no overlap).",
+  "req": "FC4",
+  "type": "Boundary",
+  "must": [],
+  "must_not": [
+   "FC4"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC5-E",
+  "what": "FC5 error: bus 'jumps' to another location",
+  "file": "Test-FC5-E.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE; idle on row 4 moved from ehvapt to ehvbst.",
+  "expected": "FC5 FAIL on rows 4 and 5.",
+  "req": "FC5 (new)",
+  "type": "Error",
+  "must": [
+   [
+    "FC5",
+    "error",
+    4,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC6-E",
+  "what": "FC6 error: charging at a location without charger",
+  "file": "Test-FC6-E.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE; charging on row 27 at ehvbst instead of ehvgar.",
+  "expected": "FC6 FAIL on row 27 (follow-on FC5 errors expected).",
+  "req": "FC6 (new)",
+  "type": "Error",
+  "must": [
+   [
+    "FC6",
+    "error",
+    27,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC7-E",
+  "what": "FC7 error: trip faster than the minimum travel time",
+  "file": "Test-FC7-E.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE; service trip on row 9 ends 5 min earlier.",
+  "expected": "FC7 FAIL (error) on row 9.",
+  "req": "FC7 (new)",
+  "type": "Error",
+  "must": [
+   [
+    "FC7",
+    "error",
+    9,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC8-E1",
+  "what": "FC8 error: timetable trip not driven",
+  "file": "Test-FC8-E1.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE; service trip ehvbst->ehvapt 07:51 (bus 1) deleted.",
+  "expected": "FC8 FAIL: trip at 07:51 not driven (follow-on FC5 because the bus stays put).",
+  "req": "FC8 (new)",
+  "type": "Error",
+  "must": [
+   [
+    "FC8",
+    "error",
+    null,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC8-E2",
+  "what": "FC8 error: timetable trip driven twice",
+  "file": "Test-FC8-E2.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE plus extra bus 99 that also drives the 10:26 trip ehvapt->ehvbst.",
+  "expected": "FC8 FAIL: trip driven 2 times.",
+  "req": "FC8 (new)",
+  "type": "Error",
+  "must": [
+   [
+    "FC8",
+    "error",
+    null,
+    99
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "MID",
+  "what": "Trips after midnight are handled (no negative durations)",
+  "file": "Test-BASE.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE contains the 23:37 and 00:01 timetable trips (ending after 00:00).",
+  "expected": "No DQ-DUR errors; those trips count as end of the service day.",
+  "req": "DQ: times",
+  "type": "Boundary",
+  "must": [],
+  "must_not": [
+   "DQ-DUR"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "KPI1-H",
+  "what": "KPI1 happy flow: correct count of buses used (3 buses)",
+  "file": "Test-MINI.xlsx",
+  "timetable": "Test-MINI-Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Mini plan: 3 buses, 5 service trips, 3 charging sessions (20 + 15 + 15 min). Use timetable Test-MINI-Timetable.xlsx and SOC at start of day = 40% (so that charging stays below 90%).",
+  "expected": "Buses used = 3",
+  "req": "KPI1",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [
+   "FC1",
+   "FC2",
+   "FC3",
+   "FC4",
+   "FC5",
+   "FC7",
+   "FC8"
+  ],
+  "kpi": {
+   "Buses used": 3
+  },
+  "energy_check": null,
+  "start_soc": 0.4
+ },
+ {
+  "id": "KPI1-B",
+  "what": "KPI1 boundary: non-consecutive bus numbers (1, 2, 5)",
+  "file": "Test-KPI1-B.xlsx",
+  "timetable": "Test-MINI-Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-MINI with bus 3 renumbered to 5.",
+  "expected": "Buses used = 3 (not 5)",
+  "req": "KPI1",
+  "type": "Boundary",
+  "must": [],
+  "must_not": [
+   "FC1",
+   "FC2",
+   "FC3",
+   "FC4",
+   "FC5",
+   "FC7",
+   "FC8"
+  ],
+  "kpi": {
+   "Buses used": 3
+  },
+  "energy_check": null,
+  "start_soc": 0.4
+ },
+ {
+  "id": "KPI2-H",
+  "what": "KPI2 happy flow: total charging time matches manual sum",
+  "file": "Test-MINI.xlsx",
+  "timetable": "Test-MINI-Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-MINI: charging 07:57-08:17 (20 min, bus 1), 08:14-08:29 (15 min, bus 2), 09:13-09:28 (15 min, bus 3).",
+  "expected": "Total charging time = 20 + 15 + 15 = 50 min; charging sessions = 3",
+  "req": "KPI2",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [
+   "FC1",
+   "FC2",
+   "FC3",
+   "FC4",
+   "FC5",
+   "FC7",
+   "FC8"
+  ],
+  "kpi": {
+   "Total charging time (min)": 50,
+   "Charging sessions": 3
+  },
+  "energy_check": null,
+  "start_soc": 0.4
+ },
+ {
+  "id": "KPI3-H",
+  "what": "KPI3 happy flow: material trip distance/time matches manual calculation",
+  "file": "Test-MINI.xlsx",
+  "timetable": "Test-MINI-Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-MINI material trips: 3\u00d7 gar\u2192bst (4 min, 1.65 km), 2\u00d7 bst\u2192gar (4 min, 1.65 km), 1\u00d7 apt\u2192gar (20 min, 9.0 km).",
+  "expected": "Material trips = 6; time = 5\u00d74 + 20 = 40 min; distance = 5\u00d71.65 + 9.0 = 17.25 km",
+  "req": "KPI3",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [
+   "FC1",
+   "FC2",
+   "FC3",
+   "FC4",
+   "FC5",
+   "FC7",
+   "FC8"
+  ],
+  "kpi": {
+   "Material trips": 6,
+   "Material trip time (min)": 40,
+   "Material trip distance (km)": 17.25
+  },
+  "energy_check": null,
+  "start_soc": 0.4
+ },
+ {
+  "id": "EC-H",
+  "what": "Energy calc: tool recalculates driving energy instead of trusting the file column",
+  "file": "Test-MINI.xlsx",
+  "timetable": "Test-MINI-Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-MINI, row 3: service trip line 400 ehvbst\u2192ehvapt, 10,708 m.",
+  "expected": "Model energy = 10.708 km \u00d7 1.2 kWh/km = 12.8496 kWh",
+  "req": "Energy model",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [
+   "FC1",
+   "FC2",
+   "FC3",
+   "FC4",
+   "FC5",
+   "FC7",
+   "FC8"
+  ],
+  "kpi": {},
+  "energy_check": {
+   "bus": 1,
+   "start": 420,
+   "value": 12.8496
+  },
+  "start_soc": 0.4
+ },
+ {
+  "id": "EC-E",
+  "what": "Energy calc: idle activity of 30 minutes",
+  "file": "Test-MINI.xlsx",
+  "timetable": "Test-MINI-Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-MINI: bus 3 idle 08:23-08:53 at ehvapt.",
+  "expected": "Idle energy = 5 kW \u00d7 0.5 h = 2.5 kWh (the client's file always uses 5 kWh)",
+  "req": "Energy model",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [
+   "FC1",
+   "FC2",
+   "FC3",
+   "FC4",
+   "FC5",
+   "FC7",
+   "FC8"
+  ],
+  "kpi": {},
+  "energy_check": {
+   "bus": 3,
+   "start": 503,
+   "value": 2.5
+  },
+  "start_soc": 0.4
+ },
+ {
+  "id": "REG-1",
+  "what": "Regression: original client plan",
+  "file": "Bus_Planning.xlsx (original)",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Original Canvas files.",
+  "expected": "Not feasible: FC1 errors on 13 buses; 20 buses, 23 charging sessions, 505 min charging, 251 material trips.",
+  "req": "All checks / KPIs",
+  "type": "Regression",
+  "must": [
+   [
+    "FC1",
+    "error",
+    null,
+    1
+   ]
+  ],
+  "must_not": [],
+  "kpi": {
+   "Buses used": 20,
+   "Charging sessions": 23,
+   "Total charging time (min)": 505,
+   "Material trips": 251
+  },
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "GEN-1",
+  "what": "Generator: improved plan is feasible and covers the timetable",
+  "file": "Generated in the tool",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Plan made by the tool itself (tab 'Improved plan', button 'Generate improved plan') with the default assumptions.",
+  "expected": "Feasible (no errors), all 327 timetable trips driven, fewer buses than the original plan (20).",
+  "req": "Generate improved plan",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [
+   "FC1",
+   "FC2",
+   "FC3",
+   "FC4",
+   "FC5",
+   "FC6",
+   "FC7",
+   "FC8",
+   "DQ-COL"
+  ],
+  "kpi": {
+   "Service trips": 327
+  },
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "GEN-2",
+  "what": "Generator: exported file has exactly the client's format",
+  "file": "Generated in the tool",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Excel file downloaded with 'Download improved plan' compared with the client's Bus_Planning.xlsx.",
+  "expected": "Same sheet name (Sheet1) and the same 8 column headers in the same order.",
+  "req": "Improved plan in client format",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
+  "id": "FC3-E2",
+  "what": "FC3 error: charging continues past 90% (model mode, can be run in the app)",
+  "file": "Test-FC3-E2.xlsx",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) extended from 26 to 36 minutes, following idle shortened.",
+  "expected": "FC3 FAIL for bus 13 on row 652.",
+  "req": "FC3",
+  "type": "Error",
+  "must": [
+   [
+    "FC3",
+    "error",
+    652,
+    13
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ }
+]
