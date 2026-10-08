@@ -114,18 +114,7 @@ def read_plan(file, distances):
         return None, issues + [make_issue("DQ-EMPTY", "No usable rows in the bus plan.")]
     plan = pd.DataFrame(rows)
     fix_line_column(plan)
-    # rows of a bus that are not in time order in the file (the tool sorts them afterwards)
-    for bus, bus_rows in plan.groupby("bus"):
-        previous = None
-        for _, r in bus_rows.iterrows():
-            if previous is not None and (r["start"], r["end"]) < (previous["start"], previous["end"]):
-                issues.append(make_issue("DQ-ORDER", f"Row {r['row']} ({minutes_to_time(r['start'])}-{minutes_to_time(r['end'])}) "
-                                         f"should come before row {previous['row']} ({minutes_to_time(previous['start'])}-"
-                                         f"{minutes_to_time(previous['end'])}).", "warning", bus=bus, row=r["row"],
-                                         time=minutes_to_time(r["start"])))
-                break
-            previous = r
-    return plan.sort_values(["bus", "start", "end"]).reset_index(drop=True), issues
+    return plan, issues   # rows stay in the order of the file: the plan is checked exactly as it was given
 
 # ---------------------------------------------------------------- 2. battery + feasibility checks
 # kWh charged: 450 kW up to 90%, 60 kW above 90%, never above 100%
@@ -155,7 +144,8 @@ def check_plan(plan, timetable, distances, settings=DEFAULT_SETTINGS):
             # FC4 overlap and FC5 location, compared with the previous activity; a gap counts as standing still
             if previous is not None:
                 if a["start"] < previous["end"]:
-                    error("FC4", f"Overlaps with the previous activity (ends {minutes_to_time(previous['end'])}).")
+                    error("FC4", f"Starts at {time}, before the previous row (row {previous['row']}) ends at "
+                                 f"{minutes_to_time(previous['end'])}: overlap or rows in the wrong order.")
                 if a["start_loc"] != previous["end_loc"]:
                     error("FC5", f"Bus is at {previous['end_loc']} but this activity starts at {a['start_loc']}.")
                 soc -= max(0, a["start"] - previous["end"]) * IDLE_KW / 60

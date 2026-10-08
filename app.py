@@ -6,7 +6,7 @@ from logic import (DEFAULT_SETTINGS, check_plan, improve, is_feasible, kpis, min
                    read_distances, read_plan, read_timetable, to_excel)
 
 CHECKS = {"FC1": "SOC never below 10%", "FC2": "Charging at least 15 minutes", "FC3": "Never charged above 90%",
-          "FC4": "No overlap, service trips in timetable, no line on material trips", "FC5": "Bus starts where it ended",
+          "FC4": "No overlap (rows in time order), service trips in timetable, no line on material trips", "FC5": "Bus starts where it ended",
           "FC6": "Charging only at the garage", "FC7": "Trip not faster than the distance matrix allows",
           "FC8": "Every timetable trip driven exactly once"}
 DATA_CHECKS = {"DQ-COL": "Columns are missing. The file cannot be checked.",
@@ -19,10 +19,8 @@ DATA_CHECKS = {"DQ-COL": "Columns are missing. The file cannot be checked.",
                "DQ-NUM": "Energy is not a number. These rows are left out of the checks.",
                "DQ-LINE": "Line is not 400 or 401. These rows are left out of the checks.",
                "DQ-ROUTE": "Route is not in the distance matrix. These rows are left out of the checks.",
-               "DQ-ORDER": "Some buses have rows that are not in time order in the Excel file. "
-                           "No problem: the tool puts them in the right order itself.",
-               "DQ-ENERGY": "The column 'energy consumption' in the file does not match our own calculation "
-                            "(driving × kWh/km from the sidebar, standing still 5 kW). The tool uses its own calculation."}
+               "DQ-ENERGY": "The 'energy consumption' in the file differs from our calculation with the sidebar values "
+                            "(driving: km × kWh/km, standing still: 5 kW). The file itself is not changed."}
 COLORS = {"service trip": "#2a6fdb", "material trip": "#f08c00", "idle": "#c9ced6", "charging": "#2f9e44"}
 DAY = pd.Timestamp("2026-01-01")
 
