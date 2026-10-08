@@ -196,7 +196,7 @@
   "file": "Test-BASE.xlsx",
   "timetable": "Timetable.xlsx",
   "energy_source": "model",
-  "data": "Test-BASE (feasible plan from the generator).",
+  "data": "Test-BASE (feasible plan from the generator). Start SOC 90% (the test file was built for this start value).",
   "expected": "FC1 PASS for all buses; plan feasible.",
   "req": "FC1",
   "type": "Happy flow",
@@ -213,7 +213,7 @@
   ],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC1-E",
@@ -221,7 +221,7 @@
   "file": "Test-FC1-E.xlsx",
   "timetable": "Timetable.xlsx",
   "energy_source": "model",
-  "data": "Test-BASE, every charging session of bus 5 changed into idle.",
+  "data": "Test-BASE, every charging session of bus 5 changed into idle. Start SOC 90% (the test file was built for this start value).",
   "expected": "FC1 FAIL for bus 5 with time of first violation and lowest SOC.",
   "req": "FC1",
   "type": "Error",
@@ -236,7 +236,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC1-B1",
@@ -244,7 +244,7 @@
   "file": "Test-FC1-B1.xlsx",
   "timetable": "Timetable.xlsx",
   "energy_source": "file",
-  "data": "Test-BASE; energy of the first activity of bus 14 (row 657) increased by 57.7320 kWh, so that the lowest SOC of bus 14 becomes 10.00%. Run with energy source = file column.",
+  "data": "Test-BASE; energy of the first activity of bus 14 (row 657) increased by 57.7320 kWh, so that the lowest SOC of bus 14 becomes 10.00%. Run with energy source = file column. Start SOC 90% (the test file was built for this start value).",
   "expected": "Lowest SOC bus 14 = 10.00% → PASS (10.00% is allowed)",
   "req": "FC1",
   "type": "Boundary",
@@ -254,7 +254,7 @@
   ],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC1-B2",
@@ -262,7 +262,7 @@
   "file": "Test-FC1-B2.xlsx",
   "timetable": "Timetable.xlsx",
   "energy_source": "file",
-  "data": "Test-BASE; energy of the first activity of bus 14 (row 657) increased by 57.9870 kWh, so that the lowest SOC of bus 14 becomes 9.90%. Run with energy source = file column.",
+  "data": "Test-BASE; energy of the first activity of bus 14 (row 657) increased by 57.9870 kWh, so that the lowest SOC of bus 14 becomes 9.90%. Run with energy source = file column. Start SOC 90% (the test file was built for this start value).",
   "expected": "Lowest SOC bus 14 = 9.90% → FAIL (9.90% < 10%)",
   "req": "FC1",
   "type": "Boundary",
@@ -277,7 +277,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC2-H",
@@ -367,7 +367,7 @@
   "file": "Test-FC3-H.xlsx",
   "timetable": "Timetable.xlsx",
   "energy_source": "file",
-  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -183.1410 kWh so it ends at 85.00%. Run with energy source = file column.",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -183.1410 kWh so it ends at 85.00%. Run with energy source = file column. Start SOC 90% (the test file was built for this start value).",
   "expected": "FC3 PASS for bus 13.",
   "req": "FC3",
   "type": "Happy flow",
@@ -377,7 +377,7 @@
   ],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC3-E",
@@ -385,7 +385,7 @@
   "file": "Test-FC3-E.xlsx",
   "timetable": "Timetable.xlsx",
   "energy_source": "file",
-  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -208.6410 kWh so it ends at 95.00%. Run with energy source = file column.",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -208.6410 kWh so it ends at 95.00%. Run with energy source = file column. Start SOC 90% (the test file was built for this start value).",
   "expected": "FC3 FAIL for bus 13.",
   "req": "FC3",
   "type": "Error",
@@ -400,7 +400,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC3-B1",
@@ -408,7 +408,7 @@
   "file": "Test-FC3-B1.xlsx",
   "timetable": "Timetable.xlsx",
   "energy_source": "file",
-  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -195.8910 kWh so it ends at 90.00%. Run with energy source = file column.",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -195.8910 kWh so it ends at 90.00%. Run with energy source = file column. Start SOC 90% (the test file was built for this start value).",
   "expected": "FC3 PASS (90.00% is allowed) for bus 13.",
   "req": "FC3",
   "type": "Boundary",
@@ -418,7 +418,7 @@
   ],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC3-B2",
@@ -426,7 +426,7 @@
   "file": "Test-FC3-B2.xlsx",
   "timetable": "Timetable.xlsx",
   "energy_source": "file",
-  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -196.1460 kWh so it ends at 90.10%. Run with energy source = file column.",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) starts at 13.18%; its energy set to -196.1460 kWh so it ends at 90.10%. Run with energy source = file column. Start SOC 90% (the test file was built for this start value).",
   "expected": "FC3 FAIL (90.10% > 90%) for bus 13.",
   "req": "FC3",
   "type": "Boundary",
@@ -441,7 +441,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC4-H",
@@ -857,7 +857,7 @@
   "timetable": "Timetable.xlsx",
   "energy_source": "model",
   "data": "Original Canvas files.",
-  "expected": "Not feasible: FC1 errors on 13 buses; FC4/FC5 errors on 6 buses where rows are in the wrong order; 20 buses, 23 charging sessions, 505 min charging, 251 material trips.",
+  "expected": "Not feasible: FC1 errors on 13 buses; 1 FC3 error (charged above 90%, because buses start at 100%); FC4/FC5 errors on 6 buses where rows are in the wrong order; 20 buses, 23 charging sessions, 505 min charging, 251 material trips.",
   "req": "All checks / KPIs",
   "type": "Regression",
   "must": [
@@ -907,6 +907,57 @@
   "start_soc": null
  },
  {
+  "id": "GEN-3",
+  "what": "Generated plan with a minimum idle time of 5 minutes between trips",
+  "file": "Generated in the tool",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Original timetable and distance matrix; slider 'Minimum idle time between trips' = 5 min.",
+  "expected": "The generated plan is feasible: at least 5 minutes idle before every trip (no FC9) and no other errors.",
+  "req": "FC9: minimum idle time / Generate improved plan",
+  "type": "Happy flow",
+  "must": [],
+  "must_not": [
+   "FC1",
+   "FC2",
+   "FC3",
+   "FC4",
+   "FC5",
+   "FC6",
+   "FC7",
+   "FC8",
+   "FC9"
+  ],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null,
+  "min_idle": 5
+ },
+ {
+  "id": "FC9-E",
+  "what": "FC9 error: original plan has less than 5 minutes idle between trips",
+  "file": "Bus_Planning.xlsx (original)",
+  "timetable": "Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Original Canvas files; slider 'Minimum idle time between trips' = 5 min.",
+  "expected": "ERROR FC9 on the trips where the bus stands still less than 5 minutes after the previous trip.",
+  "req": "FC9: minimum idle time",
+  "type": "Error",
+  "must": [
+   [
+    "FC9",
+    "error",
+    null,
+    1
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null,
+  "min_idle": 5
+ },
+ {
   "id": "GEN-2",
   "what": "Generator: exported file has exactly the client's format",
   "file": "Generated in the tool",
@@ -928,7 +979,7 @@
   "file": "Test-FC3-E2.xlsx",
   "timetable": "Timetable.xlsx",
   "energy_source": "model",
-  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) extended from 26 to 36 minutes, following idle shortened.",
+  "data": "Test-BASE; charging of bus 13 at 21:34 (row 652) extended from 26 to 36 minutes, following idle shortened. Start SOC 90% (the test file was built for this start value).",
   "expected": "FC3 FAIL for bus 13 on row 652.",
   "req": "FC3",
   "type": "Error",
@@ -943,6 +994,6 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  }
 ]
