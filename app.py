@@ -9,6 +9,20 @@ CHECKS = {"FC1": "SOC never below 10%", "FC2": "Charging at least 15 minutes", "
           "FC4": "No overlap, service trips in timetable, no line on material trips", "FC5": "Bus starts where it ended",
           "FC6": "Charging only at the garage", "FC7": "Trip not faster than the distance matrix allows",
           "FC8": "Every timetable trip driven exactly once"}
+DATA_CHECKS = {"DQ-COL": "Columns are missing. The file cannot be checked.",
+               "DQ-EMPTY": "The file has no usable rows.",
+               "DQ-ACT": "Unknown activity. These rows are left out of the checks.",
+               "DQ-LOC": "Unknown location. These rows are left out of the checks.",
+               "DQ-TIME": "Invalid time. These rows are left out of the checks.",
+               "DQ-DUR": "End time before start time. These rows are left out of the checks.",
+               "DQ-BUS": "Invalid bus number. These rows are left out of the checks.",
+               "DQ-NUM": "Energy is not a number. These rows are left out of the checks.",
+               "DQ-LINE": "Line is not 400 or 401. These rows are left out of the checks.",
+               "DQ-ROUTE": "Route is not in the distance matrix. These rows are left out of the checks.",
+               "DQ-ORDER": "Some buses have rows that are not in time order in the Excel file. "
+                           "No problem: the tool puts them in the right order itself.",
+               "DQ-ENERGY": "The column 'energy consumption' in the file does not match our own calculation "
+                            "(driving × kWh/km from the sidebar, standing still 5 kW). The tool uses its own calculation."}
 COLORS = {"service trip": "#2a6fdb", "material trip": "#f08c00", "idle": "#c9ced6", "charging": "#2f9e44"}
 DAY = pd.Timestamp("2026-01-01")
 
@@ -80,10 +94,17 @@ with tab1:
 with tab2:
     st.subheader("1. Is the data correct?")
     data_issues = [i for i in issues if i["check"].startswith("DQ")]
-    if data_issues:
-        st.dataframe(pd.DataFrame(data_issues), hide_index=True, width="stretch")
-    else:
+    if not data_issues:
         st.success("No data problems found.")
+    for check, explanation in DATA_CHECKS.items():   # one coloured line per problem type, details in a drop-down
+        found = [i for i in data_issues if i["check"] == check]
+        if found:
+            show = st.error if found[0]["severity"] == "error" else st.warning
+            show(f"**{check} ({len(found)}×):** {explanation}")
+            with st.expander(f"Show where ({check})"):
+                details = pd.DataFrame(found)[["bus", "row", "time", "message"]].fillna("-")
+                details.columns = ["Bus", "Excel row", "Time", "What is wrong"]
+                st.dataframe(details, hide_index=True, width="stretch")
     st.subheader("2. Is the bus plan feasible?")
     counts = {c: sum(i["check"] == c for i in errors) for c in CHECKS}
     st.dataframe(pd.DataFrame([{"Check": c, "Rule": CHECKS[c], "Result": "❌ FAIL" if counts[c] else "✅ PASS", "Errors": counts[c]}

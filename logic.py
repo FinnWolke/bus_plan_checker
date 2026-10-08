@@ -114,9 +114,17 @@ def read_plan(file, distances):
         return None, issues + [make_issue("DQ-EMPTY", "No usable rows in the bus plan.")]
     plan = pd.DataFrame(rows)
     fix_line_column(plan)
+    # rows of a bus that are not in time order in the file (the tool sorts them afterwards)
     for bus, bus_rows in plan.groupby("bus"):
-        if list(zip(bus_rows["start"], bus_rows["end"])) != sorted(zip(bus_rows["start"], bus_rows["end"])):
-            issues.append(make_issue("DQ-ORDER", "Rows are not in time order (the tool sorts them).", "warning", bus=bus))
+        previous = None
+        for _, r in bus_rows.iterrows():
+            if previous is not None and (r["start"], r["end"]) < (previous["start"], previous["end"]):
+                issues.append(make_issue("DQ-ORDER", f"Row {r['row']} ({minutes_to_time(r['start'])}-{minutes_to_time(r['end'])}) "
+                                         f"should come before row {previous['row']} ({minutes_to_time(previous['start'])}-"
+                                         f"{minutes_to_time(previous['end'])}).", "warning", bus=bus, row=r["row"],
+                                         time=minutes_to_time(r["start"])))
+                break
+            previous = r
     return plan.sort_values(["bus", "start", "end"]).reset_index(drop=True), issues
 
 # ---------------------------------------------------------------- 2. battery + feasibility checks
@@ -153,13 +161,14 @@ def check_plan(plan, timetable, distances, settings=DEFAULT_SETTINGS):
                 soc -= max(0, a["start"] - previous["end"]) * IDLE_KW / 60
             # energy according to our model, compared with the file
             if a["activity"] == "idle":
-                energy = IDLE_KW * minutes / 60
+                energy, how = IDLE_KW * minutes / 60, f"{minutes} min × {IDLE_KW} kW"
             elif a["activity"] == "charging":
-                energy = -charge_energy(soc, minutes, settings)
+                energy, how = -charge_energy(soc, minutes, settings), f"{minutes} min charging"
             else:
-                energy = km * settings["kwh_per_km"]
+                energy, how = km * settings["kwh_per_km"], f"{km:.2f} km × {settings['kwh_per_km']} kWh/km"
             if abs(a["energy"] - energy) > 0.05:
-                error("DQ-ENERGY", f"Energy in file {a['energy']:.2f} kWh, model {energy:.2f} kWh.", "warning")
+                error("DQ-ENERGY", f"{a['activity'].capitalize()}: file says {a['energy']:.2f} kWh, "
+                                   f"should be {energy:.2f} kWh ({how}).", "warning")
             soc -= a["energy"] if settings["use_file_energy"] else energy
             soc_percent = round(soc / full * 100, 2)
             # FC2, FC3, FC6: charging rules
