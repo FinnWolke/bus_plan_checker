@@ -191,6 +191,29 @@
   "start_soc": null
  },
  {
+  "id": "DQ-MATCH",
+  "what": "Timetable does not belong to the bus plan",
+  "file": "Bus_Planning.xlsx (original)",
+  "timetable": "Test-MINI-Timetable.xlsx",
+  "energy_source": "model",
+  "data": "Client's bus plan uploaded together with the small test timetable (Test-MINI-Timetable.xlsx).",
+  "expected": "WARNING DQ-MATCH: the rows of the timetable do not match the service trips in the bus plan (details in FC4 and FC8).",
+  "req": "DQ: timetable and bus plan match",
+  "type": "Error",
+  "must": [
+   [
+    "DQ-MATCH",
+    "warning",
+    null,
+    null
+   ]
+  ],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null
+ },
+ {
   "id": "FC1-H",
   "what": "FC1 happy flow: SOC stays within normal range",
   "file": "Test-BASE.xlsx",

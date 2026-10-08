@@ -24,7 +24,8 @@ DATA_CHECKS = {"DQ-ACT": "Unknown activity",
                "DQ-NUM": "Energy is not a number",
                "DQ-LINE": "Line is not 400 or 401",
                "DQ-ROUTE": "Route is not in the distance matrix",
-               "DQ-ENERGY": "Energy in the file differs from our calculation (km × kWh/km, standing still 5 kW)"}
+               "DQ-ENERGY": "Energy in the file differs from our calculation (km × kWh/km, standing still 5 kW)",
+               "DQ-MATCH": "The rows of the timetable do not match the service trips in the bus plan"}
 COLORS = {"service trip": "#2a6fdb", "material trip": "#f08c00", "idle": "#c9ced6", "charging": "#2f9e44"}
 DAY = pd.Timestamp("2026-01-01")
 
@@ -86,7 +87,7 @@ if not plan_file or not timetable_file or not distance_file:
 # Read the files and check the plan
 try:
     distances = read_distances(distance_file)
-    timetable = read_timetable(timetable_file)
+    timetable = read_timetable(timetable_file, distances)
 except Exception as error:
     st.error(f"❌ {error}")
     st.stop()
@@ -140,6 +141,8 @@ with tab2:
             continue
         data_problems = data_problems + len(found)
         text = f"**{check} ({len(found)}×):** {DATA_CHECKS[check]}"
+        if check == "DQ-MATCH":   # one summary message: show it directly
+            text = text + ". " + found[0]["message"]
         if found[0]["severity"] == "error":
             st.error(text)
         else:

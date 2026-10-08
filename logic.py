@@ -94,13 +94,23 @@ def read_distances(file):
     return distances
 
 # timetable -> table with start, end, dep (minutes) and line, sorted on departure time
-def read_timetable(file):
+# every row must be complete; with the distance matrix we also check that the route exists
+def read_timetable(file, distances=None):
     df = pd.read_excel(file, dtype=object)
     check_columns(df, ["start", "departure_time", "end", "line"], "Timetable")
+    if len(df) == 0:
+        raise ValueError("Timetable: the file contains no trips")
+    for i, r in df.iterrows():
+        row = i + 2   # row 1 is the header
+        if time_to_minutes(r["departure_time"]) is None:
+            raise ValueError(f"Timetable row {row}: departure time '{r['departure_time']}' is not valid")
+        if pd.isna(r["start"]) or pd.isna(r["end"]) or to_number(r["line"]) is None:
+            raise ValueError(f"Timetable row {row}: start, end or line is empty or not valid")
+        if distances is not None and find_route(distances, r["start"], r["end"], int(to_number(r["line"]))) is None:
+            raise ValueError(f"Timetable row {row}: no route from {r['start']} to {r['end']} (line {r['line']}) "
+                             f"in the distance matrix")
     df["dep"] = df["departure_time"].apply(time_to_minutes)
-    if df["dep"].isna().any():
-        raise ValueError("Timetable: some departure times are not valid")
-    df["line"] = df["line"].astype(int)
+    df["line"] = df["line"].astype(float).astype(int)
     df = df.sort_values("dep").reset_index(drop=True)
     return df[["start", "end", "dep", "line"]]
 
@@ -187,6 +197,8 @@ def check_plan(plan, timetable, distances, settings=DEFAULT_SETTINGS):
     timeline = []
     driven = {}   # timetable trip -> list of (bus, row) that drive it
     timetable_trips = set(zip(timetable["start"], timetable["dep"], timetable["end"], timetable["line"]))
+    service_trips = 0        # number of service trips in the bus plan
+    not_in_timetable = 0     # service trips of the bus plan that are not in the timetable
 
     for bus, bus_rows in plan.groupby("bus"):
         soc = settings["start_soc"] * full
@@ -252,11 +264,13 @@ def check_plan(plan, timetable, distances, settings=DEFAULT_SETTINGS):
             # FC4: service trip must be in the timetable, material trip has no line
             trip = (a["start_loc"], a["start"], a["end_loc"], a["line"])
             if a["activity"] == "service trip":
+                service_trips = service_trips + 1
                 if trip in timetable_trips:
                     if trip not in driven:
                         driven[trip] = []
                     driven[trip].append((bus, row))
                 else:
+                    not_in_timetable = not_in_timetable + 1
                     issues.append(make_issue("FC4", f"Service trip line {a['line']} at {time} is not in the timetable.",
                                              bus=bus, row=row, time=time))
             if a["activity"] == "material trip" and a["line"] is not None:
@@ -287,6 +301,7 @@ def check_plan(plan, timetable, distances, settings=DEFAULT_SETTINGS):
             issues.append(too_low)
 
     # FC8: every timetable trip driven exactly once
+    not_once = 0
     for _, t in timetable.iterrows():
         trip = (t["start"], t["dep"], t["end"], t["line"])
         buses = driven.get(trip, [])
@@ -298,6 +313,14 @@ def check_plan(plan, timetable, distances, settings=DEFAULT_SETTINGS):
                 bus, row = buses[1]   # the second bus that drives it
             issues.append(make_issue("FC8", f"Trip {t['start']}->{t['end']} line {t['line']} at {time} is driven {len(buses)} times.",
                                      bus=bus, row=row, time=time))
+            not_once = not_once + 1
+
+    # DQ-MATCH: do the rows of the timetable and the service trips of the bus plan belong together?
+    if not_in_timetable > 0 or not_once > 0:
+        issues.append(make_issue("DQ-MATCH", f"{not_in_timetable} of the {service_trips} service trips in the bus plan are not "
+                                 f"in the timetable, and {not_once} of the {len(timetable)} timetable trips are not driven "
+                                 f"exactly once. Check that the timetable belongs to this bus plan (details: FC4 and FC8).",
+                                 "warning"))
     return pd.DataFrame(timeline), issues
 
 # feasible = no errors (warnings are allowed)
