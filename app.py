@@ -20,7 +20,7 @@ DATA_CHECKS = {"DQ-COL": "Columns are missing. The file cannot be checked.",
                "DQ-LINE": "Line is not 400 or 401. These rows are left out of the checks.",
                "DQ-ROUTE": "Route is not in the distance matrix. These rows are left out of the checks.",
                "DQ-ENERGY": "The 'energy consumption' in the file differs from our calculation with the sidebar values "
-                            "(driving: km × kWh/km, standing still: 5 kW). The file itself is not changed."}
+                            "(driving: km × kWh/km, standing still: 5 kW)."}
 COLORS = {"service trip": "#2a6fdb", "material trip": "#f08c00", "idle": "#c9ced6", "charging": "#2f9e44"}
 DAY = pd.Timestamp("2026-01-01")
 
