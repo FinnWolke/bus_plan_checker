@@ -75,8 +75,7 @@ st.sidebar.header("Assumptions")
 settings = DEFAULT_SETTINGS.copy()
 settings["soh"] = st.sidebar.slider("State of Health (%)", 85, 95, 85) / 100
 settings["kwh_per_km"] = st.sidebar.slider("Consumption while driving (kWh/km)", 0.7, 2.5, 1.2)
-settings["min_idle"] = st.sidebar.slider("Minimum idle time between trips (min)", 0, 15, 0,
-                                         help="Buffer in case a bus is late. Used in the checks (FC9) and in the improved plan.")
+settings["min_idle"] = st.sidebar.slider("Minimum idle time between trips (min)", 0, 15, 0, step=5)
 st.sidebar.caption(f"Usable battery: 300 kWh × {settings['soh']:.0%} = {300 * settings['soh']:.0f} kWh")
 st.sidebar.caption("Every bus starts the day with a full battery (100%).")
 
