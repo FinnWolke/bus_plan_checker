@@ -37,7 +37,18 @@ def run_test(test):
     if test.get("start_soc"):
         settings["start_soc"] = test["start_soc"]
     distances = read_distances(path("DistanceMatrix.xlsx"))
-    timetable = read_timetable(path(test["timetable"]))
+
+    # DQ-TT tests: the timetable is wrong, the tool must stop with a clear message
+    if test.get("expect_error"):
+        try:
+            read_timetable(path(test["timetable"]), distances)
+        except ValueError as error:
+            if test["expect_error"] in str(error):
+                return []
+            return [f"wrong message: {error}"]
+        return ["no error message"]
+
+    timetable = read_timetable(path(test["timetable"]), distances)
 
     # GEN-2: the downloaded Excel must have the same sheet name and columns as the client's file
     if test["id"] == "GEN-2":
@@ -45,7 +56,11 @@ def run_test(test):
         client = openpyxl.load_workbook(path("Bus_Planning.xlsx")).active
         our_columns = [c.value for c in ours[1]]
         client_columns = [c.value for c in client[1]]
-        if our_columns == client_columns and ours.title == client.title:
+        same_header = [(c.font.b, c.border.left.style, c.alignment.horizontal) for c in ours[1]] == \
+                      [(c.font.b, c.border.left.style, c.alignment.horizontal) for c in client[1]]
+        same_widths = [round(ours.column_dimensions[x].width, 1) for x in "ABCDEFGH"] == \
+                      [round(client.column_dimensions[x].width, 1) for x in "ABCDEFGH"]
+        if our_columns == client_columns and ours.title == client.title and same_header and same_widths and ours.auto_filter.ref:
             return []
         return ["wrong format"]
 

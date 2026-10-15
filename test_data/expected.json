@@ -44,7 +44,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "DQ3",
@@ -67,7 +67,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "DQ4",
@@ -90,7 +90,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "DQ5",
@@ -119,7 +119,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "DQ6",
@@ -142,7 +142,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "DQ7",
@@ -165,7 +165,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "DQ8",
@@ -188,7 +188,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "DQ-MATCH",
@@ -212,6 +212,57 @@
   "kpi": {},
   "energy_check": null,
   "start_soc": null
+ },
+ {
+  "id": "DQ-TT1",
+  "what": "Empty timetable (only the header)",
+  "file": "Bus_Planning.xlsx (original)",
+  "timetable": "Test-TT1.xlsx",
+  "energy_source": "model",
+  "data": "Timetable.xlsx with all rows removed (only the column names).",
+  "expected": "ERROR: 'Timetable: the file contains no trips'. The app stops, no crash.",
+  "req": "DQ: check timetable",
+  "type": "Boundary",
+  "must": [],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null,
+  "expect_error": "contains no trips"
+ },
+ {
+  "id": "DQ-TT2",
+  "what": "Timetable row with an empty cell",
+  "file": "Bus_Planning.xlsx (original)",
+  "timetable": "Test-TT2.xlsx",
+  "energy_source": "model",
+  "data": "Timetable.xlsx with the line of row 2 made empty.",
+  "expected": "ERROR: 'Timetable row 2: start, end or line is empty or not valid'. The app stops, no crash.",
+  "req": "DQ: check timetable",
+  "type": "Error",
+  "must": [],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null,
+  "expect_error": "row 2: start, end or line"
+ },
+ {
+  "id": "DQ-TT3",
+  "what": "Timetable row with an unknown location",
+  "file": "Bus_Planning.xlsx (original)",
+  "timetable": "Test-TT3.xlsx",
+  "energy_source": "model",
+  "data": "Timetable.xlsx with the start location of row 2 changed to 'ehvxxx'.",
+  "expected": "ERROR: 'Timetable row 2: no route from ehvxxx to ehvbst (line 401) in the distance matrix'. The app stops, no crash.",
+  "req": "DQ: check timetable",
+  "type": "Error",
+  "must": [],
+  "must_not": [],
+  "kpi": {},
+  "energy_check": null,
+  "start_soc": null,
+  "expect_error": "row 2: no route"
  },
  {
   "id": "FC1-H",
@@ -318,7 +369,7 @@
   ],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC2-E",
@@ -341,7 +392,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC2-B1",
@@ -359,7 +410,7 @@
   ],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC2-B2",
@@ -382,7 +433,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC3-H",
@@ -482,7 +533,7 @@
   ],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC4-E1",
@@ -505,7 +556,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC4-E2",
@@ -534,7 +585,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC4-E3",
@@ -557,7 +608,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC4-B",
@@ -575,7 +626,7 @@
   ],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC5-E",
@@ -598,7 +649,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC6-E",
@@ -621,7 +672,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC7-E",
@@ -644,7 +695,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC8-E1",
@@ -667,7 +718,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "FC8-E2",
@@ -690,7 +741,7 @@
   "must_not": [],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "MID",
@@ -708,7 +759,7 @@
   ],
   "kpi": {},
   "energy_check": null,
-  "start_soc": null
+  "start_soc": 0.9
  },
  {
   "id": "KPI1-H",

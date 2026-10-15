@@ -2,6 +2,7 @@
 import io
 import math
 import pandas as pd
+from openpyxl.styles import Alignment, Border, Font, Side
 
 # Fixed values from the assignment
 BATTERY_KWH = 300        # battery size of a new bus
@@ -12,6 +13,7 @@ IDLE_KW = 5              # energy use while standing still
 FAST_KW = 450            # charging speed up to 90%
 SLOW_KW = 60             # charging speed above 90%
 GARAGE = "ehvgar"        # only place with a charger
+COLUMN_WIDTHS = [16.44, 15.89, 13.44, 12.89, 11.55, 8.44, 23.0, 8.44]   # same column widths as the client's bus plan
 DEFAULT_SETTINGS = {"soh": 0.85, "kwh_per_km": 1.2, "start_soc": 1.0, "use_file_energy": False,
                     "min_idle": 0}   # min_idle = minutes standing still between two service trips (buffer for delays)
 ACTIVITIES = ["service trip", "material trip", "idle", "charging"]
@@ -319,7 +321,8 @@ def check_plan(plan, timetable, distances, settings=DEFAULT_SETTINGS):
     if not_in_timetable > 0 or not_once > 0:
         issues.append(make_issue("DQ-MATCH", f"{not_in_timetable} of the {service_trips} service trips in the bus plan are not "
                                  f"in the timetable, and {not_once} of the {len(timetable)} timetable trips are not driven "
-                                 f"exactly once. Check that the timetable belongs to this bus plan (details: FC4 and FC8).",
+                                 f"exactly once. Check that the timetable and the bus plan belong together and that the bus plan is "
+                                 f"complete (details: FC4 and FC8).",
                                  "warning"))
     return pd.DataFrame(timeline), issues
 
@@ -461,5 +464,16 @@ def to_excel(plan):
     table["energy consumption"] = plan["energy"].astype(float).round(4)
     table["bus"] = plan["bus"]
     buffer = io.BytesIO()
-    table.to_excel(buffer, index=False, sheet_name="Sheet1")
+    with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+        table.to_excel(writer, index=False, sheet_name="Sheet1")
+        sheet = writer.sheets["Sheet1"]
+        # same layout as the client's file: bold header with borders, same column widths, filter on the header
+        thin = Side(style="thin")
+        for cell in sheet[1]:
+            cell.font = Font(name="Calibri", size=11, bold=True)
+            cell.border = Border(left=thin, right=thin, top=thin, bottom=thin)
+            cell.alignment = Alignment(horizontal="center", vertical="top")
+        for letter, width in zip("ABCDEFGH", COLUMN_WIDTHS):
+            sheet.column_dimensions[letter].width = width
+        sheet.auto_filter.ref = sheet.dimensions
     return buffer.getvalue()
